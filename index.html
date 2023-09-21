@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Pagamento Freelancer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        h1 {
+            color: #007BFF;
+            margin-bottom: 20px;
+        }
+        .datetime {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .input-container {
+            flex-basis: 48%;
+            margin-bottom: 10px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        #mensagemErro {
+            color: red;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="datetime">
+            <span id="dataHora"></span>
+        </div>
+        <h1>Calculadora de Pagamento FreeLancer </h1>
+        <form id="formulario">
+            <div class="input-container">
+                <label for="nomeCompleto">Nome Completo:</label>
+                <input type="text" id="nomeCompleto" required>
+            </div>
+
+            <div class="input-container">
+                <label for="horasTrabalhadas">Horas Trabalhadas:</label>
+                <input type="number" id="horasTrabalhadas" step="0.01" required>
+            </div>
+
+            <div class="input-container">
+                <label for="setorTrabalhado">Setor Trabalhado:</label>
+                <select id="setorTrabalhado" required>
+                    <option value="Cozinha">Cozinha</option>
+                    <option value="Atendimento">Atendimento</option>
+                    <option value="Motoqueiro">Motoqueiro</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+
+            <div class="input-container">
+                <label for="tempoPausa">Tempo de Pausa (minutos):</label>
+                <input type="number" id="tempoPausa" step="0.01" required>
+            </div>
+
+            <div class="input-container">
+                <label for="data">Data:</label>
+                <input type="date" id="data" required>
+            </div>
+
+            <div class="input-container">
+                <label for="statusPagamento">Status do Pagamento:</label>
+                <select id="statusPagamento">
+                    <option value="PAGO">PAGO</option>
+                    <option value="PAGAR">PAGAR</option>
+                </select>
+            </div>
+
+            <button type="button" onclick="calcularPagamento()">Calcular Valor a Receber</button>
+            <button type="button" onclick="limparFormulario()">Limpar</button>
+        </form>
+
+        <div id="mensagemErro"></div>
+
+        <table id="resultado" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Nome Completo</th>
+                    <th>Horas Trabalhadas</th>
+                    <th>Setor Trabalhado</th>
+                    <th>Data</th>
+                    <th>Tempo de Pausa (min)</th>
+                    <th>Status do Pagamento</th>
+                    <th>Valor a Receber (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Os resultados serão preenchidos aqui via JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Função para atualizar a data e hora atual
+        function atualizarDataHora() {
+            var dataHoraElement = document.getElementById('dataHora');
+            var dataHoraAtual = new Date();
+            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' };
+            dataHoraElement.textContent = dataHoraAtual.toLocaleDateString('pt-BR', options);
+        }
+
+        // Chamar a função de atualização inicialmente
+        atualizarDataHora();
+
+        // Atualizar a data e hora a cada segundo
+        setInterval(atualizarDataHora, 1000);
+
+        function calcularPagamento() {
+            // Obter os valores do formulário
+            var nomeCompleto = document.getElementById('nomeCompleto').value;
+            var horasTrabalhadas = parseFloat(document.getElementById('horasTrabalhadas').value);
+            var setorTrabalhado = document.getElementById('setorTrabalhado').value;
+            var tempoPausa = parseFloat(document.getElementById('tempoPausa').value);
+            var data = document.getElementById('data').value;
+            var statusPagamento = document.getElementById('statusPagamento').value;
+
+            // Validar entrada
+            if (horasTrabalhadas <= 0 || tempoPausa < 0) {
+                document.getElementById('mensagemErro').textContent = "Horas trabalhadas devem ser maiores que zero, e o tempo de pausa não pode ser negativo.";
+                return;
+            }
+
+            // Limpar mensagem de erro se não houver erro
+            document.getElementById('mensagemErro').textContent = "";
+
+            // Calcular o valor a receber com dedução do tempo de pausa
+            var valorHora = 13; // Valor fixo por hora
+            var valorReceber = (horasTrabalhadas - (tempoPausa / 60)) * valorHora;
+
+            // Preencher a tabela com os resultados
+            var tabela = document.getElementById('resultado').getElementsByTagName('tbody')[0];
+            var novaLinha = tabela.insertRow(-1);
+            var colunas = [
+                nomeCompleto,
+                horasTrabalhadas.toFixed(2), // Formata as horas com duas casas decimais
+                setorTrabalhado,
+                data,
+                tempoPausa.toFixed(2), // Formata o tempo de pausa com duas casas decimais
+                statusPagamento,
+                valorReceber.toFixed(2) // Formata o valor com duas casas decimais
+            ];
+
+            for (var i = 0; i < colunas.length; i++) {
+                var coluna = novaLinha.insertCell(i);
+                coluna.innerHTML = colunas[i];
+            }
+
+            // Exibir a tabela de resultados
+            document.getElementById('resultado').style.display = 'table';
+        }
+
+        function limparFormulario() {
+            // Limpar o formulário
+            document.getElementById('formulario').reset();
+
+            // Limpar mensagem de erro
+            document.getElementById('mensagemErro').textContent = "";
+
+            // Ocultar a tabela de resultados
+            document.getElementById('resultado').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
